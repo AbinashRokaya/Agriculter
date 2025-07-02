@@ -1,0 +1,11 @@
+python-dotenv
+mysql-connector-python
+requests
+fastapi
+uvicorn
+python-jose[cryptography]
+authlib
+pyjwt
+itsdangerous
+google-auth
+httpx
