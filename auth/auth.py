@@ -14,7 +14,9 @@ from starlette.config import Config
 from auth.jwt import create_access_token
 from database.database import get_db
 from model.user_model import UserModel
-load_dotenv()
+from schemas.token_schema import Token
+
+load_dotenv(override=True)
 
 route=APIRouter(
     prefix="/abi",
@@ -44,7 +46,7 @@ async def login(request: Request):
         response_type='code',
         nonce=request.session['nonce']  # Pass nonce for ID token
     )
-@route.get("/auth")
+@route.get("/auth",response_model=Token)
 async def auth(request: Request):
     token = await oauth.google.authorize_access_token(request)
     
@@ -97,7 +99,7 @@ async def auth(request: Request):
 
     # Create JWT token
     access_token_expires = timedelta(seconds=expires_in)
-    access_token = create_access_token(data={"sub": user_id, "email": user_email}, expires_delta=access_token_expires)
+    access_token = create_access_token(data={"email":user_in_db.email,"role":user_in_db.role,"user_id":str(user_in_db.user_id)}, expires_delta=access_token_expires)
     
     
     return {"access_token":access_token,"token_type":"bearer"}
