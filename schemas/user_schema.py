@@ -1,11 +1,11 @@
 from pydantic import BaseModel,Field,EmailStr,field_validator
-from domain.common import BaseRequest,BaseResponse
 from fastapi import HTTPException
-from typing import Annotated,Optional
+from typing import Annotated,Optional,List
 import re
+from uuid import uuid4,UUID
 # from model.user_model import User
 
-class UserRequest(BaseRequest):
+class UserRequest(BaseModel):
     name:Annotated[str,Field(...,max_length=30,description="Name of the user")]
     email:Annotated[EmailStr,Field(...,description="Email of the user")]
     password:Annotated[str,Field(...,description="User password ")]
@@ -31,11 +31,36 @@ class UserRequest(BaseRequest):
 
 
 class User(BaseModel):
+    user_id:UUID
+    name:Optional[str]=None
+    email:Optional[str]=None
+    role:Optional[str]=None
+
+class UserResponse(BaseModel):
+
     name:Optional[str]=None
     email:Optional[str]=None
 
 
-class UserResponse(BaseResponse):
+class GetUserRequest(BaseModel):
+    user_id:uuid4
 
-    user:Optional[User]=None
+class GetUserResponse(BaseModel):
+    name:Optional[str]=None
+    email:Optional[str]=None
 
+
+class ListUserRequest(BaseModel):
+    skip:Optional[int]=0
+    limit:Optional[int]=10
+
+class ListUserResponse(BaseModel):
+    users:Optional[List[User]]=None
+
+class UpdateUserRequest(BaseModel):
+    name:Optional[str]=None
+    email:Optional[str]=None
+
+class UpdateUserResponse(BaseModel):
+    name:Optional[str]=None
+    email:Optional[str]=None
