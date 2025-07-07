@@ -14,12 +14,29 @@ def get_user_detail(email:str):
     return None
 
 
-def update_user(user_id:uuid4,upate_user_value:UpdateUserRequest):
+def update_user_me(user_id:uuid4,upate_user_value:UpdateUserRequest):
     with get_db() as db:
         user=db.query(UserModel).filter(UserModel.user_id==user_id).first()
 
         if not user:
             raise HTTPException(status_code=404,detail="user not found")
+        
+        update_data=upate_user_value.dict(exclude_unset=True)
+
+        for Key,value in update_data.items():
+            setattr(user,Key,value)
+
+        db.commit()
+        db.refresh(user)
+
+        return {"detail":f"{user_id} is updated"}
+    
+
+
+def update_user(user_id:uuid4,upate_user_value:UpdateUserRequest):
+    with get_db() as db:
+        user=db.query(UserModel).filter(UserModel.user_id==user_id).first()
+
         
         update_data=upate_user_value.dict(exclude_unset=True)
 
@@ -43,7 +60,7 @@ def userDelete(user_id:uuid4):
         db.delete(user)
         db.commit()
 
-        return {"message": f"User{user_id} deleted successfully"}
+        return {"message": f"User:{user_id} deleted successfully"}
     
 def GetAllUser(request:ListUserRequest):
     with get_db() as db:

@@ -11,7 +11,7 @@ import os
 from auth.current_user import get_current_user
 from database.database import engine,Base
 from auth.current_user import require_permission,Action
-from route import user_route,superamin_route
+from route import user_route,superamin_route,product_route,category_route
 from auth.superadmin import create_superadmin
 
 
@@ -40,6 +40,8 @@ app.include_router(login.route)
 app.include_router(register.route)
 app.include_router(user_route.route)
 app.include_router(superamin_route.route)
+app.include_router(product_route.route)
+app.include_router(category_route.route)
 
 @app.get("/")
 async def homepage():
