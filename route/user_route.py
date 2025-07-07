@@ -2,7 +2,7 @@ from schemas.user_schema import GetUserRequest,GetUserResponse,UpdateUserRequest
 from auth.current_user import get_current_user,require_permission
 from fastapi import Depends,APIRouter,HTTPException
 from repo.user_repo import get_user_detail,update_user,userDelete,GetAllUser
-from uuid import uuid4
+from uuid import uuid4,UUID
 
 route=APIRouter(
     prefix="/user",
@@ -23,15 +23,22 @@ def get_user_by_id(current_user=Depends(require_permission("view"))):
     except Exception as e:
         return HTTPException(status_code=500,detail=f"{e}")
     
+@route.patch("/update/me")
+def user_detail_update(update_user_value:UpdateUserRequest,current_user=Depends(get_current_user)):
+    try:
+        return update_user(user_id=current_user.user_id,upate_user_value=update_user_value)
+    except Exception as e:
+        return HTTPException(status_code=500,detail=f"{e}")
+    
 @route.patch("/update/{user_id}")
-def user_detail_update(user_id:str,update_user_value:UpdateUserRequest,current_user=Depends(require_permission("edit"))):
+def user_detail_update(user_id:UUID,update_user_value:UpdateUserRequest,current_user=Depends(require_permission("edit"))):
     try:
         return update_user(user_id=user_id,upate_user_value=update_user_value)
     except Exception as e:
         return HTTPException(status_code=500,detail=f"{e}")
     
 @route.delete("/delete/{user_id}")
-def user_delete(user_id:str,current_user=Depends(require_permission("delete"))):
+def user_delete(user_id:UUID,current_user=Depends(require_permission("delete"))):
     try:
         req=userDelete(user_id=user_id)
         return req

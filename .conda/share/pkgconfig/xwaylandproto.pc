@@ -1,0 +1,7 @@
+prefix=/home/abinash/2082-1-project/Backend_Project/.conda
+includedir=${prefix}/include
+
+Name: XwaylandProto
+Description: Xwayland extension headers
+Version: 1.0
+Cflags: -I${includedir}

@@ -1,0 +1,13 @@
+prefix=/home/abinash/2082-1-project/Backend_Project/.conda
+exec_prefix=/home/abinash/2082-1-project/Backend_Project/.conda
+libdir=/home/abinash/2082-1-project/Backend_Project/.conda/lib
+sharedlibdir=/home/abinash/2082-1-project/Backend_Project/.conda/lib
+includedir=/home/abinash/2082-1-project/Backend_Project/.conda/include
+
+Name: zlib
+Description: zlib compression library
+Version: 1.2.13
+
+Requires:
+Libs: -L${libdir} -L${sharedlibdir} -lz
+Cflags: -I${includedir}

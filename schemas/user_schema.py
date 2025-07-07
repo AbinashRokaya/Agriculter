@@ -32,22 +32,22 @@ class UserRequest(BaseModel):
 
 class User(BaseModel):
     user_id:UUID
-    name:Optional[str]=None
-    email:Optional[str]=None
+    name:Optional[Annotated[str,Field(...,max_length=30,description="Name of the user")]]=None
+    email:Optional[Annotated[EmailStr,Field(...,description="Email of the user")]]=None
     role:Optional[str]=None
 
 class UserResponse(BaseModel):
 
-    name:Optional[str]=None
-    email:Optional[str]=None
+    name:Optional[Annotated[str,Field(...,max_length=30,description="Name of the user")]]=None
+    email:Optional[Annotated[EmailStr,Field(...,description="Email of the user")]]=None
 
 
 class GetUserRequest(BaseModel):
     user_id:uuid4
 
 class GetUserResponse(BaseModel):
-    name:Optional[str]=None
-    email:Optional[str]=None
+    name:Optional[Annotated[str,Field(...,max_length=30,description="Name of the user")]]=None
+    email:Optional[Annotated[EmailStr,Field(...,description="Email of the user")]]=None
 
 
 class ListUserRequest(BaseModel):
@@ -58,9 +58,9 @@ class ListUserResponse(BaseModel):
     users:Optional[List[User]]=None
 
 class UpdateUserRequest(BaseModel):
-    name:Optional[str]=None
-    email:Optional[str]=None
+    name:Optional[Annotated[str,Field(...,max_length=30,description="Name of the user")]]=None
+    email:Optional[Annotated[EmailStr,Field(...,description="Email of the user")]]=None
 
 class UpdateUserResponse(BaseModel):
-    name:Optional[str]=None
-    email:Optional[str]=None
+    name:Optional[Annotated[str,Field(...,max_length=30,description="Name of the user")]]=None
+    email:Optional[Annotated[EmailStr,Field(...,description="Email of the user")]]=None
