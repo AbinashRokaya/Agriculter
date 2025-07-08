@@ -65,6 +65,6 @@ def DeleteCategory(category_id:UUID):
     
 def GetCategoryName(category_name:str):
     with get_db() as db:
-        category=db.query(CategoryModel).filter(CategoryModel.name.like(f"{category_name}")).first()
+        category=db.query(CategoryModel).filter(CategoryModel.name.like(f"%{category_name}%")).all()
 
         return category

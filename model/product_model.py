@@ -1,4 +1,4 @@
-from sqlalchemy import String,Boolean,Column,Integer,DateTime,Enum,Float,ForeignKey,Numeric
+from sqlalchemy import String,Boolean,Column,Integer,DateTime,Enum,Float,ForeignKey,Numeric,JSON
 from database.database import Base
 from sqlalchemy.sql import func
 from uuid import uuid4
@@ -13,6 +13,8 @@ class ProductModel(Base):
     stock_quantity=Column(Integer,nullable=False)
     description=Column(String)
     discount=Column(Integer)
+    image=Column(String)
+    coverimage=Column(JSON)
     category_id=Column(UUID(as_uuid=True),ForeignKey("category.category_id"))
     created_at=Column(DateTime,server_default=func.now())
     update_at=Column(DateTime,server_default=func.now(),onupdate=func.now())

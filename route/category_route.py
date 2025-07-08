@@ -28,16 +28,16 @@ def category_create(request:CategoryRequest,current_user=Depends(require_permiss
 @route.get("/list",response_model=CategoryListResponse)
 def category_list(skip: int = Query(0), limit: int = Query(10),current_user=Depends(require_permission("view"))):
     try:
-        list_category=CategoryList(skip=skip,limit=limit)
+        categoryall=CategoryList(skip=skip,limit=limit)
 
-        if not list_category:
+        if not categoryall:
             raise HTTPException(status_code=404,detail="Category not found")
         
-        list=CategoryResponse(
+        list=[CategoryResponse(
             id=list_category.category_id,
             name=list_category.name,
             description=list_category.description
-        )
+        )for list_category in categoryall]
 
         return CategoryListResponse(Category_list=list)
     
@@ -81,17 +81,13 @@ def delete_category(category_id:UUID,current_user=Depends(require_permission("ed
 @route.get("/category_by_name/{category_name}")
 def get_category_by_name(category_name:str=Path(...,max_length=255),current_user=Depends(require_permission("view"))):
     try:
-        list_category=GetCategoryName(category_name=category_name)
+        categoryall=GetCategoryName(category_name=category_name)
 
-        if not list_category:
-            raise HTTPException(status_code=404,detail="category not found")
-        
-
-        list=CategoryResponse(
+        list=[CategoryResponse(
             id=list_category.category_id,
             name=list_category.name,
             description=list_category.description
-        )
+        )for list_category in categoryall]
 
         return CategoryListResponse(Category_list=list)
     
