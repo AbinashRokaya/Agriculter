@@ -1,11 +1,11 @@
-from fastapi import APIRouter,Depends,HTTPException,Path,Query
+from fastapi import APIRouter,Depends,HTTPException,Path,Query,Form
 from auth.current_user import require_permission
 from uuid import UUID,uuid4
 from model.product_model import ProductModel
-from schemas.product_schema import ProductCreate,ProductResponse,ProductListRequest,ProductListResponse,ProductUpdate,ProductCreatewithImage
+from schemas.product_schema import ProductCreate,ProductResponse,ProductListRequest,ProductListResponse,ProductUpdate,ProductCreatewithImage,ProductPaganationResponse
 from repo.product_repo import createProduct,productList,GetProductById,UpdateProduct,DeleteProduct,GetProductName
 from pydantic import Field
-from typing import List
+from typing import List,Optional
 import json
 from fastapi import UploadFile,File
 from fastapi.staticfiles import StaticFiles
@@ -21,7 +21,16 @@ UPLOAD_DIR = "static/uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 @route.post("/create")
-def product_create(request:ProductCreate,image: UploadFile = File(...),coverimage: List[UploadFile] = File(...),current_user=Depends(require_permission("edit"))):
+def product_create(
+    name: str = Form(...),
+    price: float = Form(...),
+    stock_quantity: int = Form(...),
+    description: str = Form(...),
+    discount: int = Form(...),
+    category_id: UUID = Form(...),
+    image: UploadFile = File(...),
+    coverimage: List[UploadFile] = File(...),
+    current_user=Depends(require_permission("edit"))):
     try:
         if len(coverimage) < 3:
             raise HTTPException(status_code=400, detail="At least 3 cover images are required.")
@@ -41,41 +50,30 @@ def product_create(request:ProductCreate,image: UploadFile = File(...),coverimag
                 shutil.copyfileobj(cover.file, f)
             cover_paths.append(f"/static/uploads/{cover_filename}")
 
-        product_data = {
-            "name": request.name,
-            "price": request.price,
-            "stock_quantity": request.stock_quantity,
-            "description": request.description,
-            "discount": request.discount,
-            "category_id": request.category_id,
-            "image": f"/static/uploads/{image_filename}",
-            "coverimage": cover_paths,
-        }
+       
 
-        product = ProductCreatewithImage(**product_data)
+        product = ProductCreatewithImage( name=name,
+                price=price,
+                stock_quantity=stock_quantity,
+                description=description,
+                discount=discount,
+                category_id=category_id,
+                image=f"/static/uploads/{image_filename}",
+                coverimage=cover_paths)
 
         new_product=createProduct(product)
+       
+
         return {"message":f"new product: {new_product} is added"}
     
     except Exception as e:
         return HTTPException(status_code=500,detail=str(e))
     
-@route.get("/list",response_model=ProductListResponse)
-def product_list(skip:int=Query(0),limit:int=Query(10),current_user=Depends(require_permission('view'))):
+@route.get("/list")
+def product_list(cursor: Optional[UUID] = Query(None),limit: int = Query(1, gt=0, le=100),current_user=Depends(require_permission('view'))):
     try:
-        list_product=productList(skip=skip,limit=limit)
-        if not list_product:
-             raise HTTPException(status_code=404,detail="not found")
-        list=[ProductResponse(
-                id=prod.product_id,
-                name=prod.name,
-                price=prod.price,
-                stock_quantity=prod.stock_quantity,
-                description=prod.description,
-                discount=prod.discount,
-                category_id=prod.category_id
-            ) for prod in list_product]
-        return ProductListResponse(product_list=list)
+        return productList(cursor=cursor,limit=limit)
+       
     except Exception as e:
         return HTTPException(status_code=500,detail=str(e))
     
