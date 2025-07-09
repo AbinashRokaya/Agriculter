@@ -1,7 +1,7 @@
 from pydantic import BaseModel,Field,condecimal,computed_field,conlist,validator
 from typing import Annotated,Optional,List
 from uuid import UUID,uuid4
-from fastapi import UploadFile,File
+from fastapi import UploadFile,File,Form
 import re
 
 
@@ -9,7 +9,7 @@ import re
 class ProductCreate(BaseModel):
     name:Annotated[str,Field(...,max_length=255,description="Name of the product")]
     price: Annotated[
-        condecimal(max_digits=10, decimal_places=2),
+        float,
         Field(..., description="Price with 2 decimal places")
     ]
     stock_quantity:Annotated[int,Field(...,ge=0,description="Available quantity in stock")]
@@ -24,8 +24,8 @@ class ProductCreatewithImage(ProductCreate):
     # @property
     # def discount_price(self)->float:
     #     return round(self.price-(self.price*(self.discount/100)),2)
-    image: UploadFile = File(...),
-    coverimage: List[UploadFile] = File(...)
+    image: str
+    coverimage: List[str] 
 
 
     @validator('image')
@@ -48,7 +48,7 @@ class ProductResponse(BaseModel):
     id:Optional[Annotated[UUID,Field(...,description="Product id")]]=None
     name:Optional[Annotated[str,Field(...,max_lengh=255,description="Name of the product")]]=None
     price: Optional[Annotated[
-        condecimal(max_digits=10, decimal_places=2),
+        float,
         Field(..., description="Price with 2 decimal places")
     ]]=None
     stock_quantity:Optional[Annotated[int,Field(...,ge=0,description="Available quantity in stock")]]=None
@@ -57,6 +57,12 @@ class ProductResponse(BaseModel):
     category_id:Optional[Annotated[UUID,Field(...,description="Reference to category ID")]]=None
     image:Optional[str]=None
     coverimage:Optional[List[str]]=None
+
+class ProductPaganationResponse(BaseModel):
+    product_list:Optional[list[ProductResponse]]=None
+    next_cursor:Optional[UUID]=None
+
+    
     # discount_price:Optional[Annotated[float,Field(...,description="discount price of product")]]=None
 class ProductListResponse(BaseModel):
     product_list:Optional[List[ProductResponse]]=None
@@ -77,3 +83,4 @@ class ProductUpdate(BaseModel):
     category_id:Optional[Annotated[UUID,Field(...,description="Reference to category ID")]]=None
     image:Optional[Annotated[str,Field(...,description="main image of product")]]=None
     coverimage:Optional[Annotated[List[str],Field(...,description="covers image of produuct")]]=None
+
