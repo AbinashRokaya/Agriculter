@@ -56,7 +56,7 @@ def productList(cursor:UUID,limit:int):
 
         query = query.order_by(ProductModel.product_id).limit(limit + 1)
         items = query.all()
-        print(items)
+       
 
         next_cursor = None
         if len(items) > limit:
