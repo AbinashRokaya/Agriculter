@@ -9,8 +9,8 @@ import re
 class ProductCreate(BaseModel):
     name:Annotated[str,Field(...,max_length=255,description="Name of the product")]
     price: Annotated[
-        float,
-        Field(..., description="Price with 2 decimal places")
+        condecimal(max_digits=10, decimal_places=2),
+        Field(...,ge=0, description="Price with 2 decimal places")
     ]
     stock_quantity:Annotated[int,Field(...,ge=0,description="Available quantity in stock")]
     description:Annotated[str,Field(...,max_length=500,description="product description")]
@@ -48,8 +48,8 @@ class ProductResponse(BaseModel):
     id:Optional[Annotated[UUID,Field(...,description="Product id")]]=None
     name:Optional[Annotated[str,Field(...,max_lengh=255,description="Name of the product")]]=None
     price: Optional[Annotated[
-        float,
-        Field(..., description="Price with 2 decimal places")
+        condecimal(max_digits=10, decimal_places=2),
+        Field(...,ge=0, description="Price with 2 decimal places")
     ]]=None
     stock_quantity:Optional[Annotated[int,Field(...,ge=0,description="Available quantity in stock")]]=None
     description:Optional[Annotated[str,Field(...,max_length=500,description="product description")]]=None
@@ -75,7 +75,7 @@ class ProductUpdate(BaseModel):
     name:Optional[Annotated[str,Field(...,max_lengh=255,description="Name of the product")]]=None
     price: Optional[Annotated[
         condecimal(max_digits=10, decimal_places=2),
-        Field(..., description="Price with 2 decimal places")
+        Field(...,ge=0, description="Price with 2 decimal places")
     ]]=None
     stock_quantity:Optional[Annotated[int,Field(...,ge=0,description="Available quantity in stock")]]=None
     description:Optional[Annotated[str,Field(...,max_length=500,description="product description")]]=None

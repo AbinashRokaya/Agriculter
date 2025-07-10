@@ -98,9 +98,31 @@ def get_product_by_id(product_id:UUID,current_user=Depends(require_permission("e
         return HTTPException(status_code=500,detail=str(e))
 
 @route.patch('/update/{product_id}')
-def update_product(product_id:UUID,update_value:ProductUpdate,current_user=Depends(require_permission("edit"))):
+def update_product(product_id: UUID,
+    name: Optional[str] = Form(None),
+    price: Optional[float] = Form(None),
+    stock_quantity: Optional[int] = Form(None),
+    description: Optional[str] = Form(None),
+    discount: Optional[int] = Form(None),
+    category_id: Optional[UUID] = Form(None),
+    image: Optional[UploadFile] = File(None),
+    coverimage: Optional[List[UploadFile]] = File(None),
+    current_user=Depends(require_permission("edit"))):
     try:
-        return UpdateProduct(product_id=product_id,value_update=update_value)
+        
+        update_data=ProductUpdate(
+            product_id=product_id,
+            name=name,
+            price=price,
+            stock_quantity=stock_quantity,
+            description=description,
+            discount=discount,
+            category_id=category_id,
+            image=image,
+            coverimage=coverimage,
+        
+        )
+        return UpdateProduct(product_id=product_id,value_update=update_data)
     
     except Exception as e:
         return HTTPException(status_code=500,detail=str(e))
