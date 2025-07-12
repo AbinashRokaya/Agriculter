@@ -9,10 +9,10 @@ class Role(str,Enum):
     SuperAdmin="SuperAdmin"
     Admin="Admin"
 
-Action=Literal["view","edit","write","delete","role_assign"]
+Action=Literal["view","edit","write","delete","role_assign","me"]
 
 ROLE_PERMISSIONS: dict[Role, set[Action]] = {
-    Role.User: {"view"},
+    Role.User: {"view","me"},
     Role.Admin: {"view", "edit"},
     Role.SuperAdmin: {"view", "edit", "write","delete","role_assign"},
 }
