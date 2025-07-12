@@ -3,6 +3,7 @@ from database.database import Base
 from sqlalchemy.sql import func
 from uuid import uuid4
 from sqlalchemy.types import UUID
+from sqlalchemy.orm import relationship
 
 class ProductModel(Base):
     __tablename__="product"
@@ -18,3 +19,6 @@ class ProductModel(Base):
     category_id=Column(UUID(as_uuid=True),ForeignKey("category.category_id"))
     created_at=Column(DateTime,server_default=func.now())
     update_at=Column(DateTime,server_default=func.now(),onupdate=func.now())
+
+    cart=relationship("CarItemModel",back_populates="product")
+    category=relationship("CategoryModel",back_populates="product")

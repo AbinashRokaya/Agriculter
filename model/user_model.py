@@ -4,6 +4,7 @@ from sqlalchemy.sql import func
 from uuid import uuid4
 from sqlalchemy.types import UUID
 from schemas.role_schema import Role
+from sqlalchemy.orm import relationship
 
 
 
@@ -18,4 +19,6 @@ class UserModel(Base):
     is_google_auth=Column(Boolean,default=False)
     created_at=Column(DateTime,server_default=func.now())
     update_at=Column(DateTime,server_default=func.now(),onupdate=func.now())
+
+    cart_value=relationship("CartModel",back_populates="user")
     
