@@ -16,6 +16,8 @@ def CreateCart(cart_request:CartIteamRequest,user_id:UUID):
         product=db.query(ProductModel).filter(ProductModel.product_id==cart_request.product_id).first()
         if not product:
             raise HTTPException(status_code=404,detail="product not found")
+        
+       
         if not exist_cart:
             cart=CartModel(
                 user_id=user_id
@@ -31,12 +33,17 @@ def CreateCart(cart_request:CartIteamRequest,user_id:UUID):
             product_id=cart_request.product_id,
             stock_quantaty=cart_request.stock_quantaty
         )
-        db.add(cart_item)
-        db.commit()
-        db.refresh(cart_item)
+        if check_quantay(cart_item.product.stock_quantity,cart_request.stock_quantaty):
+            db.add(cart_item)
+            db.commit()
+            db.refresh(cart_item)
 
-        return {"message":f"new product {cart_request.product_id} is added to card "}
-    
+            return {"message":f"new product {cart_request.product_id} is added to card "}
+        else:
+            raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE,detail=f"your stock quantaty {quantaty} is greater than actual stock quantaty")
+        
+
+
 def ListOrder(cursor:UUID,limit:int,user_id:UUID):
     with get_db() as db:
      
@@ -98,3 +105,12 @@ def check_quantay(act_quant,user_quant):
         return False
     else:
         return True
+    
+def deleteCart(cart_items_id:UUID):
+    with get_db() as db:
+        cart_items=db.query(CarItemModel).filter(CarItemModel.order_items_id==cart_items_id).first()
+        if not cart_items:
+            raise HTTPException(status_code=404,detail="cart not found")
+        db.delete(cart_items)
+        db.commit()
+        return {"message":f"cart items {cart_items.product.name} is deleted"}

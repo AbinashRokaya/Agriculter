@@ -19,7 +19,7 @@ from schemas.token_schema import Token
 load_dotenv(override=True)
 
 route=APIRouter(
-    prefix="/abi",
+    prefix="/api/v-1",
 
 )
 config = Config(".env")
