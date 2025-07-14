@@ -22,3 +22,4 @@ class ProductModel(Base):
 
     cart=relationship("CarItemModel",back_populates="product")
     category=relationship("CategoryModel",back_populates="product")
+    order_item=relationship("OrderItemsModel",back_populates="product")
