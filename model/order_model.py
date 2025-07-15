@@ -16,7 +16,10 @@ class OrderModel(Base):
     status=Column(Enum(OrderStatus),default=OrderStatus.Pending)
     created_at=Column(DateTime,server_default=func.now())
     update_at=Column(DateTime,server_default=func.now(),onupdate=func.now())
+
+
     order_item=relationship("OrderItemsModel",back_populates="order")
+    user=relationship("UserModel",back_populates="order")
 
 
 class OrderItemsModel(Base):

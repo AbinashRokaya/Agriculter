@@ -1,5 +1,8 @@
 from database.database import get_db
-from schemas.product_schema import ProductCreate,ProductListRequest,ProductUpdate,ProductCreatewithImage,ProductResponse,ProductPaganationResponse
+from schemas.product_schema import (ProductCreate,ProductListRequest,
+                                    ProductUpdate,ProductCreatewithImage,
+                                    ProductResponse,ProductPaganationResponse,
+                                    CategoryResponse)
 from uuid import UUID
 from model.product_model import ProductModel
 from model.category_model import CategoryModel
@@ -26,7 +29,7 @@ def createProduct(request:ProductCreatewithImage):
             stock_quantity=request.stock_quantity,
             description=request.description,
             discount=request.discount,
-            category_id=request.category_id,
+            category=request.category_id,
             image=request.image,
             coverimage=request.coverimage if isinstance(request.coverimage, list) else []
 
@@ -73,7 +76,11 @@ def productList(cursor:UUID,limit:int):
                 stock_quantity=prod.stock_quantity,
                 description=prod.description,
                 discount=prod.discount,
-                category_id=prod.category_id,
+                category=CategoryResponse(
+                    category_id=prod.category.category_id,
+                    name=prod.category.name,
+                    description=prod.category.description
+                ),
                 image=prod.image,
                 coverimage=prod.coverimage
             )
