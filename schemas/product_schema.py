@@ -42,7 +42,13 @@ class ProductCreatewithImage(ProductCreate):
             if not re.match(r"^/static/.+\.(jpg|jpeg|png|gif)$", url, re.IGNORECASE):
                 raise ValueError(f"Invalid image path: {url}")
         return v
-    
+
+  
+class CategoryResponse(BaseModel):
+    category_id:Optional[UUID]=None
+    name:Optional[str]=None
+    description:Optional[str]=None
+  
 
 class ProductResponse(BaseModel):
     id:Optional[Annotated[UUID,Field(...,description="Product id")]]=None
@@ -54,7 +60,7 @@ class ProductResponse(BaseModel):
     stock_quantity:Optional[Annotated[int,Field(...,ge=0,description="Available quantity in stock")]]=None
     description:Optional[Annotated[str,Field(...,max_length=500,description="product description")]]=None
     discount:Optional[Annotated[int,Field(...,ge=0,le=100,description="Discount of product")]]=None
-    category_id:Optional[Annotated[UUID,Field(...,description="Reference to category ID")]]=None
+    category:Optional[CategoryResponse]=None
     image:Optional[str]=None
     coverimage:Optional[List[str]]=None
 

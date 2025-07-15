@@ -29,17 +29,32 @@ class OrderProductResponse(BaseModel):
     coverimage:Optional[List[str]]=None
 
 class OrderResponse(BaseModel):
-    order_items_id:Optional[UUID]=None
-    user_id:Optional[UUID]=None
     order_id:Optional[UUID]=None
     total_amount:Optional[float]=None
-    product:Optional[OrderProductResponse]=None
     status:Optional[OrderStatus]=None
-    stock_quantaty:Optional[int]=None
+
+
+
+class UserResponse(BaseModel):
+    user_id:Optional[UUID]=None
+    name:Optional[str]=None
+
+
+class OrderItemsResponse(BaseModel):
+    order_item_id:Optional[UUID]=None
+    product:Optional[OrderProductResponse]=None
     price:Optional[float]=None
+    stock_quantaty:Optional[int]=None
+
+    
+class AllOrderItemsResponse(BaseModel):
+    order_items:Optional[List[OrderItemsResponse]]=None
+    user:Optional[UserResponse]=None
+    order:Optional[OrderResponse]=None
+   
 
 class OrderPaganitionResponse(BaseModel):
-    order_list:Optional[List[OrderResponse]]=None
+    order_list:Optional[List[AllOrderItemsResponse]]=None
     next_cursor:Optional[UUID]=None
 
 
@@ -70,9 +85,9 @@ class OrderItemsListRequest(BaseModel):
 ###---------------------------- order items -------------------#####
 
 
-class OrderIteamResponse(BaseModel):
-    order_item_id:Optional[UUID]=None
-    order_id:Optional[UUID]=None
-    product:Optional[ProductPaganationResponse]=None
-    stock_quanty:Optional[int]=None
-    price:Optional[float]=None
+# class OrderIteamResponse(BaseModel):
+#     order_item_id:Optional[UUID]=None
+#     order_id:Optional[UUID]=None
+#     product:Optional[ProductPaganationResponse]=None
+#     stock_quanty:Optional[int]=None
+#     price:Optional[float]=None

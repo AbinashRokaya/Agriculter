@@ -6,7 +6,10 @@ from model.user_model import UserModel
 from fastapi import HTTPException,status
 from uuid import UUID
 from sqlalchemy import and_,or_
-from schemas.order_schema import OrderIteamRequest,OrderItemsListRequest,OrderStatus,OrderResponse,OrderPaganitionResponse,OrderProductResponse
+from schemas.order_schema import (OrderIteamRequest,OrderItemsListRequest,OrderStatus,
+                                  OrderItemsResponse,OrderPaganitionResponse,
+                                  OrderProductResponse,OrderResponse,UserResponse,
+                                  AllOrderItemsResponse)
 
 
 def CreateOrderItems(order_items_req: OrderItemsListRequest, user_id: UUID):
@@ -79,25 +82,34 @@ def orderList(cursor:UUID,limit:int,user_id:UUID):
             next_cursor=items[-1].order_items_id
             items=items[:limit]
 
-        list_data=[OrderResponse(
-            order_items_id=c.order_items_id,
-            user_id=c.order.user_id,
-            order_id=c.order.order_id,
-             total_amount=c.order.total_amount,
-            product=OrderProductResponse(
-                id=c.product.product_id,
-                name=c.product.name,
-                description=c.product.description,
-                discount=c.product.discount,
-                category_name=c.product.category.name,
-                image=c.product.image,
-                coverimage=c.product.coverimage
-
-
+        list_data=[ AllOrderItemsResponse(
+            order_items=OrderItemsResponse(
+                 order_items_id=c.order_items_id,
+                product=OrderProductResponse(
+                    id=c.product.product_id,
+                    name=c.product.name,
+                    description=c.product.description,
+                    discount=c.product.discount,
+                    category_name=c.product.category.name,
+                    image=c.product.image,
+                    coverimage=c.product.coverimage
             ),
-            status=c.order.status,
-            price=c.price,
-            stock_quantaty=c.stock_quantaty
+                 price=c.price,
+                stock_quantaty=c.stock_quantaty
+            ),
+            
+            user=UserResponse(
+                user_id=c.order.user_id,
+                name=c.order.user.name,
+            ),
+            order=OrderResponse(
+                order_id=c.order.order_id,
+                status=c.order.status,
+                total_amount=c.order.total_amount,
+            ),
+           
+           
+            
             )for c in items]
 
         return OrderPaganitionResponse(order_list=list_data,next_cursor=next_cursor)
@@ -114,30 +126,31 @@ def orderListAdmin(cursor:UUID,limit:int,user_id:UUID):
             raise HTTPException(status_code=404,detail="order not found")
         next_cursor=None
 
-        if len(items)>limit:
-            next_cursor=items[-1].order_items_id
-            items=items[:limit]
-
-        list_data=[OrderResponse(
-            order_items_id=c.order_items_id,
-            user_id=c.order.user_id,
-            order_id=c.order.order_id,
-            total_amount=c.order.total_amount,
-            product=OrderProductResponse(
-                id=c.product.product_id,
-                name=c.product.name,
-              
-                description=c.product.description,
-                discount=c.product.discount,
-                category_name=c.product.category.name,
-                image=c.product.image,
-                coverimage=c.product.coverimage
-
-
+        list_data=[OrderItemsResponse(
+            order_items=OrderItemsResponse(
+                 order_items_id=c.order_items_id,
+                product=OrderProductResponse(
+                    id=c.product.product_id,
+                    name=c.product.name,
+                    description=c.product.description,
+                    discount=c.product.discount,
+                    category_name=c.product.category.name,
+                    image=c.product.image,
+                    coverimage=c.product.coverimage
             ),
-            status=c.order.status,
-            price=c.price,
-            stock_quantaty=c.stock_quantaty
+                 price=c.price,
+                stock_quantaty=c.stock_quantaty
+            ),
+            user=UserResponse(
+                user_id=c.order.user_id,
+                name=c.order.user.name,
+            ),
+            order=OrderResponse(
+                order_id=c.order.order_id,
+                status=c.order.status,
+                total_amount=c.order.total_amount,
+            ),
+            
             )for c in items]
 
         return OrderPaganitionResponse(order_list=list_data,next_cursor=next_cursor)
@@ -174,29 +187,37 @@ def search_from_status(cursor:UUID,limit:int,order_status:OrderStatus):
             next_cursor=items[-1].order_id
             items=items[:limit]
 
-        list_data = []
-        for c in items:
-            for item in c.order_item:  # <- iterate through the list of order items
-                list_data.append(
-                    OrderResponse(
-                        order_items_id=item.order_items_id,
-                        user_id=c.user_id,
-                        order_id=c.order_id,
-                        total_amount=c.total_amount,
-                        product=OrderProductResponse(
-                            id=item.product.product_id,
-                            name=item.product.name,
-                            description=item.product.description,
-                            discount=item.product.discount,
-                            category_name=item.product.category.name,
-                            image=item.product.image,
-                            coverimage=item.product.coverimage
-                        ),
-                        status=c.status,
-                        price=item.price,
-                        stock_quantaty=item.stock_quantaty
-                    )
-                )
+        list_data = [
+    AllOrderItemsResponse(
+        order_items=[
+            OrderItemsResponse(
+                order_item_id=oi.order_items_id,
+                product=OrderProductResponse(
+                    id=oi.product.product_id,
+                    name=oi.product.name,
+                    description=oi.product.description,
+                    discount=oi.product.discount,
+                    category_name=oi.product.category.name,
+                    image=oi.product.image,
+                    coverimage=oi.product.coverimage,
+                ),
+                price=oi.price,
+                stock_quantaty=oi.stock_quantaty
+            ) for oi in c.order_item  # loop over order items
+        ],
+        user=UserResponse(
+            user_id=c.user_id,
+            name=c.user.name,
+        ),
+        order=OrderResponse(
+            order_id=c.order_id,
+            status=c.status,
+            total_amount=c.total_amount,
+        ),
+    )
+    for c in items
+]
+
 
         return OrderPaganitionResponse(order_list=list_data,next_cursor=next_cursor)
     

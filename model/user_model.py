@@ -21,4 +21,5 @@ class UserModel(Base):
     update_at=Column(DateTime,server_default=func.now(),onupdate=func.now())
 
     cart_value=relationship("CartModel",back_populates="user")
+    order=relationship("OrderModel",back_populates="user")
     
