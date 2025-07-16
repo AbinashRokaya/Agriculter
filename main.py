@@ -46,10 +46,23 @@ app.include_router(category_route.route)
 app.include_router(cart_route.route)
 app.include_router(order_route.route)
 
-@app.get("/")
-async def homepage():
-    return HTMLResponse('<a href="abi/login">Login with Google</a>')
 
+@app.get("/", response_class=HTMLResponse)
+async def homepage():
+    html_content = """
+    <html>
+        <head>
+            <title>Login Page</title>
+        </head>
+        <body>
+            <h2>Welcome! Please login:</h2>
+            <form action="/api/v1/google/auth" method="post">
+                <button type="submit">Login with Google</button>
+            </form>
+        </body>
+    </html>
+    """
+    return HTMLResponse(content=html_content)
 @app.get("/chat")
 async def get_response(current_user = Depends(require_permission("view"))):
     return {"message": f"{current_user['user_role']} can view"}

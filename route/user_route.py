@@ -5,7 +5,7 @@ from repo.user_repo import get_user_detail,update_user,userDelete,GetAllUser
 from uuid import uuid4,UUID
 
 route=APIRouter(
-    prefix="/user",
+    prefix="/api/v1/user",
     tags=["user details"]
 )
 

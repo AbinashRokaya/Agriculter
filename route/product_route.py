@@ -2,7 +2,10 @@ from fastapi import APIRouter,Depends,HTTPException,Path,Query,Form
 from auth.current_user import require_permission
 from uuid import UUID,uuid4
 from model.product_model import ProductModel
-from schemas.product_schema import ProductCreate,ProductResponse,ProductListRequest,ProductListResponse,ProductUpdate,ProductCreatewithImage,ProductPaganationResponse
+from schemas.product_schema import (ProductCreate,ProductResponse,
+                                    ProductListRequest,ProductListResponse,
+                                    ProductUpdate,ProductCreatewithImage,
+                                    ProductPaganationResponse,CategoryResponse)
 from repo.product_repo import createProduct,productList,GetProductById,UpdateProduct,DeleteProduct,GetProductName
 from pydantic import Field
 from typing import List,Optional
@@ -12,7 +15,7 @@ from fastapi.staticfiles import StaticFiles
 import os,shutil
 
 route=APIRouter(
-    prefix="/product",
+    prefix="/api/v1/product",
     tags=["Product"]
 )
 route.mount("/uploads",StaticFiles(directory="static/uploads"),name="uploads")
@@ -89,7 +92,11 @@ def get_product_by_id(product_id:UUID,current_user=Depends(require_permission("e
                 name=list_product.name,
                 price=list_product.price,
                 stock_quantity=list_product.stock_quantity,
-                description=list_product.description,
+                category=CategoryResponse(
+                    category_id=list_product.category.category_id,
+                    name=list_product.category.name,
+                    description=list_product.category.description
+                ),
                 discount=list_product.discount,
                 category_id=list_product.category_id
             )
@@ -148,13 +155,17 @@ def get_product_by_name(product_name:str=Path(...,max_length=255),current_user=D
                 stock_quantity=prod.stock_quantity,
                 description=prod.description,
                 discount=prod.discount,
-                category_id=prod.category_id
+                category=CategoryResponse(
+                    category_id=prod.category.category_id,
+                    name=prod.category.name,
+                    description=prod.category.description
+                ),
             ) for prod in list_product]
         return ProductListResponse(product_list=list)
     except Exception as e:
         return HTTPException(status_code=500,detail=str(e))
 
 
-    
+
 
     
