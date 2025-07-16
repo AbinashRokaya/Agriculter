@@ -9,7 +9,7 @@ from typing import Optional
 
 
 route=APIRouter(
-    prefix="/Order",
+    prefix="/api/v1/Order",
     tags=["order"]
 )
 

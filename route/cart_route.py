@@ -8,7 +8,7 @@ from typing import Optional
 from pydantic import Field
 
 route=APIRouter(
-    prefix="/cart",
+    prefix="/api/v1/cart",
     tags=["cart"]
 )
 

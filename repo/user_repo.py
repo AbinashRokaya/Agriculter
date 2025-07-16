@@ -9,7 +9,6 @@ def get_user_detail(email:str):
     with get_db() as db:
         user=db.query(UserModel).filter(UserModel.email==email).first()
         if user:
-            print(user)
             return user
     return None
 

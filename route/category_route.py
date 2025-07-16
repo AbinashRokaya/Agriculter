@@ -9,7 +9,7 @@ from pydantic import Field
 
 
 route=APIRouter(
-    prefix="/category",
+    prefix="/api/v1/category",
     tags=["Category"]
 
 )

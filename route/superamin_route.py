@@ -7,7 +7,7 @@ from schemas.superadmin_schema import AdminListRequest,AdminListResponse,Admin
 
 
 route=APIRouter(
-    prefix="/SuperAdmin",
+    prefix="/api/v1/SuperAdmin",
     tags=["SuperAdmin"]
 )
 
