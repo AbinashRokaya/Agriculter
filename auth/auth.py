@@ -14,7 +14,11 @@ route = APIRouter(prefix="/api/v1/google")
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
 
 
-
+"""
+This is the method of google authenticate. Where  frontend send {id token} and here the {id token} is verify by the google tokens verifaction.
+when the veryfaction is True it fetch user data from the token and add all the data in database. In database if it is authenticate from the google is write True in is_google_auth 
+other wise fase. This function give the response of token,token_type and user details
+"""
 
 @route.post("/auth",response_model=TokenResponse)
 async def google_auth_via_post(payload: IdTokenPayload):

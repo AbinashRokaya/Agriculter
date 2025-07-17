@@ -19,9 +19,7 @@ class UserRequest(BaseModel):
             raise ValueError("Password must be at least 8 characters long")
         if not any(c.islower() for c in v):
             raise ValueError("Password must include at least one lowercase letter")
-        if not any(c.isupper() for c in v):
-            raise ValueError("Password must include at least one uppercase letter")
-        if not any(c.isdigit() for c in v):
+       
             raise ValueError("Password must include at least one digit")
         if not re.search(r'[!@#$%^&*(),.?":{}|<>]', v):
             raise ValueError("Password must include at least one special character")
