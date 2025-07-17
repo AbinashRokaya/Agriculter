@@ -21,8 +21,11 @@ ACCESS_TOKEN_MINUTES=os.getenv("ACCESS_TOKEN_MINUTES")
 
 
 
-
-oauth2_schema=OAuth2PasswordBearer(tokenUrl='/manual/login')
+"""
+This method is for get the current user. If the user is login it creates the JWT token where user data is encypt and in this method the token data
+is decode. Decode the user data and check the user data in database if user is in database it give the respone of user name,email and role
+"""
+oauth2_schema=OAuth2PasswordBearer(tokenUrl='/login')
 def get_current_user(token: str = Depends(oauth2_schema)):
     with get_db() as db:
         try:
@@ -69,7 +72,9 @@ def validate_user_request(token: str = Cookie(None)):
 
     return session_details
 
-
+"""
+This method check Role of the user. which api can use by which user it check the permission.
+"""
 def require_permission(action:Action):
     def dependency(user=Depends(get_current_user)):
         role=user["user_role"]
