@@ -6,7 +6,9 @@ from schemas.product_schema import (ProductCreate,ProductResponse,
                                     ProductListRequest,ProductListResponse,
                                     ProductUpdate,ProductCreatewithImage,
                                     ProductPaganationResponse,CategoryResponse)
-from repo.product_repo import createProduct,productList,GetProductById,UpdateProduct,DeleteProduct,GetProductName
+from repo.product_repo import (createProduct,productList,
+                               GetProductById,UpdateProduct,
+                               DeleteProduct,GetProductName)
 from pydantic import Field
 from typing import List,Optional
 import json
@@ -115,8 +117,7 @@ def update_product(product_id: UUID,
     image: Optional[UploadFile] = File(None),
     coverimage: Optional[List[UploadFile]] = File(None),
     current_user=Depends(require_permission("edit"))):
-    try:
-        
+    try: 
         update_data=ProductUpdate(
             product_id=product_id,
             name=name,
@@ -127,7 +128,6 @@ def update_product(product_id: UUID,
             category_id=category_id,
             image=image,
             coverimage=coverimage,
-        
         )
         return UpdateProduct(product_id=product_id,value_update=update_data)
     

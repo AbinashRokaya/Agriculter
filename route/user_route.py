@@ -1,4 +1,6 @@
-from schemas.user_schema import GetUserRequest,GetUserResponse,UpdateUserRequest,ListUserRequest,ListUserResponse,User
+from schemas.user_schema import (GetUserRequest,GetUserResponse,
+                                 UpdateUserRequest,ListUserRequest,
+                                 ListUserResponse,User)
 from auth.current_user import get_current_user,require_permission
 from fastapi import Depends,APIRouter,HTTPException
 from repo.user_repo import get_user_detail,update_user,userDelete,GetAllUser

@@ -1,4 +1,4 @@
-import jwt
+from jose import jwt, ExpiredSignatureError, JWTError
 from jwt.exceptions import InvalidTokenError
 import os 
 from datetime import datetime,timedelta
@@ -8,7 +8,7 @@ import os
 import json
 
 
-load_dotenv()
+load_dotenv(override=True)
 
 SECRET_KEY=os.getenv("SECRET_KEY")
 ALGORITHM=os.getenv("ALGORITHM")
@@ -24,3 +24,8 @@ def create_access_token(subject: dict, expires_delta: timedelta = None):
     encoded_jwt=jwt.encode(to_encode,SECRET_KEY,ALGORITHM)
 
     return encoded_jwt
+
+
+
+
+

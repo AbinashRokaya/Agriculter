@@ -1,4 +1,6 @@
-from sqlalchemy import (String,Boolean,Column,Integer,DateTime,Enum,Float,ForeignKey,Numeric)
+from sqlalchemy import (String,Boolean,Column,
+                        Integer,DateTime,Enum,
+                        Float,ForeignKey,Numeric)
 from database.database import Base
 from sqlalchemy.sql import func
 from uuid import uuid4
