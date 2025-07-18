@@ -4,12 +4,14 @@ from database.database import get_db
 from model.user_model import UserModel
 from auth.hasing import get_password_hashed
 from sqlalchemy import and_,or_
+from auth.jwt import create_access_token
+from schemas.token_schema import Token,TokenResponse,UserAuthResponse
 route = APIRouter(
     prefix="/api/v1",
     tags=["Register"]
 )
 
-@route.post("/register", status_code=status.HTTP_201_CREATED)
+@route.post("/register", status_code=status.HTTP_201_CREATED,response_model=TokenResponse)
 def register(user: UserRequest):
     try:
         with get_db() as db:
@@ -27,8 +29,20 @@ def register(user: UserRequest):
             db.add(new_user)
             db.commit()
             db.refresh(new_user)
+            access_token=create_access_token({"email":new_user.email,"role":new_user.role,"user_id":str(new_user.user_id)})
 
-            return {"register sussfully"}
+            return TokenResponse(
+                token=Token(
+                    access_token=access_token,token_type="bear",
+                         
+                ),
+                user=UserAuthResponse(
+                        user_id=new_user.user_id,
+                        user_name=new_user.name,
+                        user_email=new_user.email,
+                        user_role=new_user.role),
+                message="register successfully"
+            )
 
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")

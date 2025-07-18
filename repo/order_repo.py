@@ -10,6 +10,7 @@ from schemas.order_schema import (OrderIteamRequest,OrderItemsListRequest,OrderS
                                   OrderItemsResponse,OrderPaganitionResponse,
                                   OrderProductResponse,OrderResponse,UserResponse,
                                   AllOrderItemsResponse)
+# from mapper.order_mapper  import orderListResponse
 
 
 def CreateOrderItems(order_items_req: OrderItemsListRequest, user_id: UUID):
@@ -126,7 +127,7 @@ def orderListAdmin(cursor:UUID,limit:int,user_id:UUID):
             raise HTTPException(status_code=404,detail="order not found")
         next_cursor=None
 
-        list_data=[OrderItemsResponse(
+        list_data=[AllOrderItemsResponse(
             order_items=OrderItemsResponse(
                  order_items_id=c.order_items_id,
                 product=OrderProductResponse(
@@ -203,7 +204,7 @@ def search_from_status(cursor:UUID,limit:int,order_status:OrderStatus):
                 ),
                 price=oi.price,
                 stock_quantaty=oi.stock_quantaty
-            ) for oi in c.order_item  # loop over order items
+            ) for oi in c.order_item 
         ],
         user=UserResponse(
             user_id=c.user_id,
@@ -215,8 +216,8 @@ def search_from_status(cursor:UUID,limit:int,order_status:OrderStatus):
             total_amount=c.total_amount,
         ),
     )
-    for c in items
-]
+    for c in items]
+
 
 
         return OrderPaganitionResponse(order_list=list_data,next_cursor=next_cursor)

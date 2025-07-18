@@ -19,8 +19,6 @@ class UserRequest(BaseModel):
             raise ValueError("Password must be at least 8 characters long")
         if not any(c.islower() for c in v):
             raise ValueError("Password must include at least one lowercase letter")
-       
-            raise ValueError("Password must include at least one digit")
         if not re.search(r'[!@#$%^&*(),.?":{}|<>]', v):
             raise ValueError("Password must include at least one special character")
         if re.search(r'\s', v):
@@ -30,22 +28,22 @@ class UserRequest(BaseModel):
 
 class User(BaseModel):
     user_id:UUID
-    name:Optional[Annotated[str,Field(...,max_length=30,description="Name of the user")]]=None
-    email:Optional[Annotated[EmailStr,Field(...,description="Email of the user")]]=None
+    name:Optional[str]=None
+    email:Optional[EmailStr]=None
     role:Optional[str]=None
 
 class UserResponse(BaseModel):
 
-    name:Optional[Annotated[str,Field(...,max_length=30,description="Name of the user")]]=None
-    email:Optional[Annotated[EmailStr,Field(...,description="Email of the user")]]=None
+    name:Optional[str]=None
+    email:Optional[EmailStr]=None
 
 
 class GetUserRequest(BaseModel):
     user_id:uuid4
 
 class GetUserResponse(BaseModel):
-    name:Optional[Annotated[str,Field(...,max_length=30,description="Name of the user")]]=None
-    email:Optional[Annotated[EmailStr,Field(...,description="Email of the user")]]=None
+    name:Optional[str]=None
+    email:Optional[EmailStr]=None
 
 
 class ListUserRequest(BaseModel):
@@ -56,8 +54,8 @@ class ListUserResponse(BaseModel):
     users:Optional[List[User]]=None
 
 class UpdateUserRequest(BaseModel):
-    name:Optional[Annotated[str,Field(...,max_length=30,description="Name of the user")]]=None
-    email:Optional[Annotated[EmailStr,Field(...,description="Email of the user")]]=None
+    name:Optional[str]=None
+    email:Optional[EmailStr]=None
 
 class UpdateUserResponse(BaseModel):
     name:Optional[Annotated[str,Field(...,max_length=30,description="Name of the user")]]=None

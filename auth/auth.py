@@ -7,7 +7,7 @@ from database.database import get_db
 from model.user_model import UserModel
 from auth.jwt import create_access_token
 import os
-from schemas.token_schema import IdTokenPayload,TokenResponse
+from schemas.token_schema import IdTokenPayload,TokenResponse,UserAuthResponse,Token
 
 route = APIRouter(prefix="/api/v1/google")
 
@@ -54,8 +54,17 @@ async def google_auth_via_post(payload: IdTokenPayload):
         "user_id": str(user.user_id)
     })
 
-    return TokenResponse(access_token=access_token,token_type="bear",
-                         user_id=user.user_id,
-                         user_name=user.name,
-                         user_email=user.email,
-                         user_role=user.role)
+    return TokenResponse(
+        token=Token(
+             access_token=access_token,
+             token_type="bear",
+        ),
+        user=UserAuthResponse(
+                        user_id=user.user_id,
+                        user_name=user.name,
+                        user_email=user.email,
+                        user_role=user.role
+        ),
+        message="Successfully register"
+        
+                        )
