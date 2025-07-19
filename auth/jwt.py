@@ -22,6 +22,7 @@ def create_access_token(subject: dict, expires_delta: timedelta = None):
 
     to_encode={"exp":expires_delta,"sub":json.dumps(subject)}
     encoded_jwt=jwt.encode(to_encode,SECRET_KEY,ALGORITHM)
+  
 
     return encoded_jwt
 

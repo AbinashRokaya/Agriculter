@@ -1,5 +1,5 @@
 from fastapi import HTTPException,Cookie,status,Depends
-from jose import jwt, ExpiredSignatureError, JWTError
+from jose import jwt, JWTError
 from dotenv import load_dotenv
 import os
 import traceback
@@ -10,7 +10,7 @@ from schemas.role_schema import ROLE_PERMISSIONS,Action,Role
 from datetime import datetime
 from pydantic import ValidationError
 from model.user_model import UserModel
-import jwt
+
 import json
 
 load_dotenv(override=True)
@@ -26,18 +26,30 @@ Retrieves the currently authenticated user by decoding the JWT token.
 The token contains encrypted user data (email, role, user_id), which is extracted and verified against the database.
 If valid, returns the user's ID, email, and role.
 """
-oauth2_schema=OAuth2PasswordBearer(tokenUrl='/api/v1/login')
+oauth2_schema=OAuth2PasswordBearer(tokenUrl='/api/v1/auth/login')
+
 def get_current_user(token: str = Depends(oauth2_schema)):
+ 
     with get_db() as db:
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-            token_data = payload.get("sub")
-            print(token_data)
+            token_data_raw = payload.get("sub")
+
+            if not token_data_raw:
+                raise HTTPException(status_code=403, detail="Token subject missing")
 
             try:
-                token_data = json.loads(token_data)
-            except Exception:
-                raise HTTPException(status_code=403, detail="Invalid token data")
+                token_data = json.loads(token_data_raw)
+            except json.JSONDecodeError:
+                raise HTTPException(status_code=403, detail="Invalid token structure")
+
+            exp = token_data.get("exp")
+            if exp and datetime.fromtimestamp(exp) < datetime.utcnow():
+                raise HTTPException(
+                    status_code=401,
+                    detail="Token expired",
+                    headers={"WWW-Authenticate": "Bearer"}
+                )
 
             user_email = token_data.get("email")
             user_role = token_data.get("role")
@@ -46,8 +58,8 @@ def get_current_user(token: str = Depends(oauth2_schema)):
             if not user_email:
                 raise HTTPException(status_code=403, detail="Email missing in token")
 
-            authenticate_user = db.query(UserModel).filter(UserModel.email == user_email).first()
-            if not authenticate_user:
+            user = db.query(UserModel).filter(UserModel.email == user_email).first()
+            if not user:
                 raise HTTPException(status_code=404, detail="User not found")
 
             return {
@@ -56,13 +68,7 @@ def get_current_user(token: str = Depends(oauth2_schema)):
                 "user_role": user_role
             }
 
-        except jwt.ExpiredSignatureError:
-            raise HTTPException(
-                status_code=401,
-                detail="Token expired",
-                headers={"WWW-Authenticate": "Bearer"}
-            )
-        except (jwt.PyJWTError, ValidationError):
+        except (JWTError, ValidationError):
             raise HTTPException(
                 status_code=403,
                 detail="Could not validate credentials",

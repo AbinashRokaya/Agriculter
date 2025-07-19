@@ -4,18 +4,40 @@ from model.product_model import ProductModel
 from model.user_model import UserModel
 from fastapi import HTTPException,status
 from uuid import UUID
-from schemas.cart_schema import CartIteamRequest,CartIteamResponse,CartReqest,CartResponse,CartPaganitionResponse,CartProductResponse
+from schemas.cart_schema import (CartItemsResponse,CartIteamRequest,CreateCartResponse,
+                                 AllCartItemsResponse,UserResponse,CartResponse,
+                                 CartProductResponse,CartPaganitionResponse,CartIteamResponse)
+from domain.common import ErrorCode,StatusMessage
 from sqlalchemy import and_,or_
+from fastapi.responses import JSONResponse
 
 def CreateCart(cart_request:CartIteamRequest,user_id:UUID):
     with get_db() as db:
         user=db.query(UserModel).filter(UserModel.user_id==user_id).first()
         if not user:
-            raise HTTPException(status_code=404,detail="user not found")
+            return JSONResponse(
+                status_code=404,
+                content=CreateCartResponse(
+                        error=True,
+                        msg="User not found",
+                        code=ErrorCode.NOT_FOUND,
+                        status=StatusMessage.FAILED
+                )
+            )
+            
         exist_cart=db.query(CartModel).filter(CartModel.user_id==user_id).first()
         product=db.query(ProductModel).filter(ProductModel.product_id==cart_request.product_id).first()
         if not product:
-            raise HTTPException(status_code=404,detail="product not found")
+            return JSONResponse(
+                status_code=404,
+                content=CreateCartResponse(
+                        error=True,
+                        msg="Product not found",
+                        code=ErrorCode.NOT_FOUND,
+                        status=StatusMessage.FAILED
+                )
+            )
+           
         
        
         if not exist_cart:
@@ -38,9 +60,35 @@ def CreateCart(cart_request:CartIteamRequest,user_id:UUID):
             db.commit()
             db.refresh(cart_item)
 
+            return JSONResponse(
+                status_code=400,
+                content=CreateCartResponse(
+                        error=True,
+                        msg="Stock quuantaty not available ",
+                        code=ErrorCode.NOT_FOUND,
+                        status=StatusMessage.FAILED
+                        content=CreateCartResponse(
+                            cart=(
+                                AllCartItemsResponse(
+                                    cart_items=
+                                )
+
+                            )
+                        )
+                )
+            )
             return {"message":f"new product {cart_request.product_id} is added to card "}
         else:
-            raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE,detail=f"your stock quantaty {quantaty} is greater than actual stock quantaty")
+            return JSONResponse(
+                status_code=400,
+                content=CreateCartResponse(
+                        error=True,
+                        msg="Stock quuantaty not available ",
+                        code=ErrorCode.NOT_FOUND,
+                        status=StatusMessage.FAILED
+                )
+            )
+            
         
 
 
@@ -48,7 +96,7 @@ def ListOrder(cursor:UUID,limit:int,user_id:UUID):
     with get_db() as db:
      
 
-        query=db.query(CarItemModel).filter(CartModel.user_id == user_id)
+        query=db.query(CarItemModel).filter(CartModel.user_id == user_id) raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE,detail=f"your stock quantaty {quantaty} is greater than actual stock quantaty")
 
         if cursor:
             query=query.filter(CarItemModel.product_id>cursor)
