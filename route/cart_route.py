@@ -5,7 +5,7 @@ from auth.current_user import require_permission,get_current_user
 from uuid import UUID,uuid4
 from model.cart_model import CartModel,CarItemModel
 from schemas.cart_schema import (CartIteamRequest,CartIteamResponse,
-                                 CartReqest,CartResponse)
+                                 CartResponse)
 from repo.cart_repo import (CreateCart,ListOrder,
                             UpdateCart,deleteCart)
 from typing import Optional

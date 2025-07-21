@@ -60,23 +60,23 @@ def CreateCart(cart_request:CartIteamRequest,user_id:UUID):
             db.commit()
             db.refresh(cart_item)
 
-            return JSONResponse(
-                status_code=400,
-                content=CreateCartResponse(
-                        error=True,
-                        msg="Stock quuantaty not available ",
-                        code=ErrorCode.NOT_FOUND,
-                        status=StatusMessage.FAILED
-                        content=CreateCartResponse(
-                            cart=(
-                                AllCartItemsResponse(
-                                    cart_items=
-                                )
+            # return JSONResponse(
+            #     status_code=400,
+            #     content=CreateCartResponse(
+            #             error=True,
+            #             msg="Stock quuantaty not available ",
+            #             code=ErrorCode.NOT_FOUND,
+            #             status=StatusMessage.FAILED
+            #             content=CreateCartResponse(
+            #                 cart=(
+            #                     AllCartItemsResponse(
+            #                         cart_items=
+            #                     )
 
-                            )
-                        )
-                )
-            )
+            #                 )
+            #             )
+            #     )
+            # )
             return {"message":f"new product {cart_request.product_id} is added to card "}
         else:
             return JSONResponse(
@@ -96,7 +96,8 @@ def ListOrder(cursor:UUID,limit:int,user_id:UUID):
     with get_db() as db:
      
 
-        query=db.query(CarItemModel).filter(CartModel.user_id == user_id) raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE,detail=f"your stock quantaty {quantaty} is greater than actual stock quantaty")
+        query=db.query(CarItemModel).filter(CartModel.user_id == user_id) 
+      
 
         if cursor:
             query=query.filter(CarItemModel.product_id>cursor)
