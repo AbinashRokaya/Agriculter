@@ -41,13 +41,18 @@ class AllCartItemsResponse(BaseModel):
     user:Optional[UserResponse]=None
     cart:Optional[CartResponse]=None
 
+class CreateAllCartItemsResponse(BaseModel):
+    cart_items:Optional[CartItemsResponse]=None
+    user:Optional[UserResponse]=None
+    cart:Optional[CartResponse]=None
+
 class CartPaganitionResponse(BaseModel):
     cart_list:Optional[List[AllCartItemsResponse]]=None
     next_cursor:Optional[UUID]=None
    
 
 class CreateCartResponse(BaseResponse):
-    cart:Optional[AllCartItemsResponse]=None
+    cart:Optional[CreateAllCartItemsResponse]=None
 
 # class CartUpdateRequest(BaseModel):
 #     quantaty

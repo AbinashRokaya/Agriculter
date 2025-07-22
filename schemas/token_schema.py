@@ -22,9 +22,11 @@ class UserAuthResponse(BaseModel):
     user_role:Optional[Role]=None
     user_email:Optional[str]=None
 
+    model_config = ConfigDict(json_encoders={UUID: str},use_enum_values=True)
+
 class TokenResponse(BaseResponse):
     user:Optional[UserAuthResponse]=None
-    model_config = ConfigDict(use_enum_values=True)
+    model_config = ConfigDict(json_encoders={UUID: str},use_enum_values=True)
  
     
 

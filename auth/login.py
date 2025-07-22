@@ -43,32 +43,44 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
                 
             access_token=create_access_token(subject={"email":get_user.email,"role":get_user.role,"user_id":str(get_user.user_id)})
 
-            return JSONResponse(
-                status_code=200,
-                content=TokenResponse(
-                    msg="login successfully",
-                    status_code=ErrorCode.OK,
-                    status=StatusMessage.SUCCESSFULLY,
-                     user=UserAuthResponse(
+            response_obj = TokenResponse(
+                msg="login successfully",
+                status_code=ErrorCode.OK,
+                status=StatusMessage.SUCCESSFULLY,
+                user=UserAuthResponse(
                     token=access_token,
-                    user_id=get_user.user_id,
+                    user_id=get_user.user_id,  # No need to convert to str manually
                     user_name=get_user.name,
                     user_email=get_user.email,
-                    user_role=get_user.role),
-
+                    user_role=get_user.role
                 )
             )
-            
+
+            return JSONResponse(
+                status_code=200,
+                content=response_obj.model_dump(mode="json")  # 🔑 KEY FIX HERE
+            )
+
+
+
     except ValueError as e:
-         return JSONResponse(
-                    status_code=400,
-                    content=TokenResponse(error=True,msg=str(e),status_code=ErrorCode.BAD_REQUEST,status=StatusMessage.FAILED).model_dump()
-                )
-        
+        return JSONResponse(
+            status_code=400,
+            content=TokenResponse(
+                error=True,
+                msg=str(e),
+                status_code=ErrorCode.BAD_REQUEST,
+                status=StatusMessage.FAILED
+            ).model_dump(mode="json")
+        )
+
     except Exception as e:
         return JSONResponse(
-                    status_code=500,
-                    content=TokenResponse(error=True,msg=str(e),status_code=ErrorCode.INTERNAL_ERROR,status=StatusMessage.FAILED).model_dump()
-                )
-        
-
+            status_code=500,
+            content=TokenResponse(
+                error=True,
+                msg=str(e),
+                status_code=ErrorCode.INTERNAL_ERROR,
+                status=StatusMessage.FAILED
+            ).model_dump(mode="json")
+        )

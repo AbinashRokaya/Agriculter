@@ -6,7 +6,8 @@ from fastapi import HTTPException,status
 from uuid import UUID
 from schemas.cart_schema import (CartItemsResponse,CartIteamRequest,CreateCartResponse,
                                  AllCartItemsResponse,UserResponse,CartResponse,
-                                 CartProductResponse,CartPaganitionResponse,CartIteamResponse)
+                                 CartProductResponse,CartPaganitionResponse,CartIteamResponse,
+                                 CreateAllCartItemsResponse)
 from domain.common import ErrorCode,StatusMessage
 from sqlalchemy import and_,or_
 from fastapi.responses import JSONResponse
@@ -60,24 +61,42 @@ def CreateCart(cart_request:CartIteamRequest,user_id:UUID):
             db.commit()
             db.refresh(cart_item)
 
-            # return JSONResponse(
-            #     status_code=400,
-            #     content=CreateCartResponse(
-            #             error=True,
-            #             msg="Stock quuantaty not available ",
-            #             code=ErrorCode.NOT_FOUND,
-            #             status=StatusMessage.FAILED
-            #             content=CreateCartResponse(
-            #                 cart=(
-            #                     AllCartItemsResponse(
-            #                         cart_items=
-            #                     )
+            return JSONResponse(
+                    status_code=400,
+                    content=CreateCartResponse(
+                        error=True,
+                        msg="Stock quantity not available",
+                        code=ErrorCode.NOT_FOUND,
+                        status=StatusMessage.FAILED,
+                        cart=
+                            CreateAllCartItemsResponse(
+                                cart_items=CartIteamResponse(
+                                    cart_item_id=cart_item.cart_items_id,
+                                    product=CartProductResponse(
+                                        id=cart_item.product.product_id,
+                                        name=cart_item.product.name,
+                                        price=cart_item.product.price,
+                                        description=cart_item.product.description,
+                                        discount=cart_item.product.discount,
+                                        category_name=cart_item.product.category.name,
+                                        image=cart_item.product.image,
+                                        coverimage=cart_item.product.coverimage,
+                                    ),
+                                    stock_quantaty=cart_item.stock_quantaty,
+                                ),
+                                user=UserResponse(
+                                    user_id=cart_item.cart.user.user_id,
+                                    name=cart_item.cart.user.name,
+                                ),
+                                cart=CartResponse(
+                                    cart_id=cart_item.cart.cart_id,
+                                )
+                            )
+                        
+                    ).model_dump()
+                )
 
-            #                 )
-            #             )
-            #     )
-            # )
-            return {"message":f"new product {cart_request.product_id} is added to card "}
+            
         else:
             return JSONResponse(
                 status_code=400,
